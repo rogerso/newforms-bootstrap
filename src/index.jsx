@@ -498,6 +498,25 @@ var Col = React.createClass({
   }
 })
 
+var FieldSet = React.createClass({
+  mixins: [ColMixin],
+
+  propTypes: {
+    name: React.PropTypes.string
+  },
+
+  render() {
+    return <fieldset name={this.props.name} className={this.getColClassName()}>
+      {React.Children.map(this.props.children, (child, indoex) => {
+        return React.cloneElement(child, {
+          form: this.props.form
+          , spinner: this.props.spinner
+        })
+      })}
+    </fieldset>
+  }
+})
+
 var Field = React.createClass({
   mixins: [ColMixin],
 
@@ -522,6 +541,7 @@ extend(BootstrapForm, {
 , Col
 , Container
 , Field
+, FieldSet
 , PropTypes: {
     colSize: colSizeChecker
   }
