@@ -131,7 +131,7 @@ var BootstrapRadioRenderer = BootstrapChoiceFieldRenderer.extend({
 
 var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
   render() {
-    return <div className="checkbox">
+    return <div>
       {this.choiceInputs().map(input => <label className="checkbox-inline">
         {input.tag()} {input.choiceLabel}
       </label>)}
@@ -141,7 +141,7 @@ var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
 
 var BootstrapRadioInlineRenderer = RadioFieldRenderer.extend({
   render() {
-    return <div className="radio">
+    return <div>
       {this.choiceInputs().map(input => <label className="radio-inline">
         {input.tag()} {input.choiceLabel}
       </label>)}
@@ -234,6 +234,7 @@ var BootstrapField = React.createClass({
   , spinner: React.PropTypes.string
   , prefix: React.PropTypes.string
   , suffix: React.PropTypes.string
+  , labelClasses: React.PropTypes.string
   },
 
   getDefaultProps() {
@@ -263,13 +264,13 @@ var BootstrapField = React.createClass({
     var showHelpText = field.helpText && (field.isEmpty() || status == 'default')
 
     return <div className={containerClasses}>
-      {!isBooleanField && field.labelTag({attrs: {className: 'control-label'}})}
+      {!isBooleanField && field.labelTag({attrs: {className: this.props.labelClasses + ' control-label'}})}
       {!isSpecialCaseWidget && (((this.props.prefix || this.props.suffix) && <div className="input-group">
         {this.props.prefix && <span className="input-group-addon">{this.props.prefix}</span>}
         {field.asWidget(widgetAttrs)}
         {this.props.suffix && <span className="input-group-addon">{this.props.suffix}</span>}
       </div>) || field.asWidget(widgetAttrs))}
-      {isBooleanField && <label htmlFor={field.idForLabel()}>
+      {isBooleanField && <label htmlFor={field.idForLabel()} className={this.props.labelClasses}>
         {field.asWidget()} {field.label}
       </label>}
       {isFileField && <div>
@@ -485,7 +486,7 @@ var Col = React.createClass({
   render() {
     return <div className={this.getColClassName()}>
       {React.Children.map(this.props.children, (child, index) => {
-        if (child.type === Row) {
+        if (child.type === Row || child.type === Field) {
           return React.cloneElement(child, {
             form: this.props.form
           , spinner: this.props.spinner
@@ -498,6 +499,25 @@ var Col = React.createClass({
   }
 })
 
+var FieldSet = React.createClass({
+  mixins: [ColMixin],
+
+  propTypes: {
+    name: React.PropTypes.string
+  },
+
+  render() {
+    return <fieldset name={this.props.name} className={this.getColClassName()}>
+      {React.Children.map(this.props.children, (child, indoex) => {
+        return React.cloneElement(child, {
+          form: this.props.form
+          , spinner: this.props.spinner
+        })
+      })}
+    </fieldset>
+  }
+})
+
 var Field = React.createClass({
   mixins: [ColMixin],
 
@@ -507,11 +527,17 @@ var Field = React.createClass({
     suffix: React.PropTypes.string
   },
 
+  hasColClasses() {
+    return !!this.props.xs || !!this.props.sm || !!this.props.md || !!this.props.lg
+  },
+
   render() {
     var field = this.props.form.boundField(this.props.name)
-    return <div className={this.getColClassName()}>
-      <BootstrapField key={field.htmlName} field={field} prefix={this.props.prefix} suffix={this.props.suffix}/>
-    </div>
+    var bsfield = <BootstrapField key={field.htmlName} field={field} prefix={this.props.prefix} suffix={this.props.suffix} labelClasses={this.props.labelClasses}/>
+    if (this.hasColClasses()) {
+      return <div className={this.getColClassName()}>{bsfield}</div>
+    }
+    return bsfield
   }
 })
 
@@ -522,6 +548,7 @@ extend(BootstrapForm, {
 , Col
 , Container
 , Field
+, FieldSet
 , PropTypes: {
     colSize: colSizeChecker
   }
