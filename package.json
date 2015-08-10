@@ -1,7 +1,7 @@
 {
   "name": "newforms-bootstrap",
   "description": "Bootstrap integration for newforms",
-  "version": "2.0.0-1",
+  "version": "2.0.0-2",
   "main": "./lib/index.js",
   "standalone": "BootstrapForm",
   "homepage": "https://github.com/rogerso/newforms-bootstrap",

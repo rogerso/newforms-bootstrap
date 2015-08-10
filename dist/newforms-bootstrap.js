@@ -1,5 +1,5 @@
 /*!
- * newforms-bootstrap 2.0.0 (dev build at Mon, 10 Aug 2015 06:52:09 GMT) - https://github.com/insin/newforms-bootstrap
+ * newforms-bootstrap 2.0.0-1 (dev build at Mon, 10 Aug 2015 13:07:14 GMT) - https://github.com/rogerso/newforms-bootstrap
  * MIT Licensed
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.BootstrapForm = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
@@ -136,7 +136,7 @@ var BootstrapRadioRenderer = BootstrapChoiceFieldRenderer.extend({
 
 var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
   render:function() {
-    return React.createElement("div", {className: "checkbox"}, 
+    return React.createElement("div", null, 
       this.choiceInputs().map(function(input)  {return React.createElement("label", {className: "checkbox-inline"}, 
         input.tag(), " ", input.choiceLabel
       );})
@@ -146,7 +146,7 @@ var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
 
 var BootstrapRadioInlineRenderer = RadioFieldRenderer.extend({
   render:function() {
-    return React.createElement("div", {className: "radio"}, 
+    return React.createElement("div", null, 
       this.choiceInputs().map(function(input)  {return React.createElement("label", {className: "radio-inline"}, 
         input.tag(), " ", input.choiceLabel
       );})
@@ -239,6 +239,7 @@ var BootstrapField = React.createClass({displayName: "BootstrapField",
   , spinner: React.PropTypes.string
   , prefix: React.PropTypes.string
   , suffix: React.PropTypes.string
+  , labelClasses: React.PropTypes.string
   },
 
   getDefaultProps:function() {
@@ -268,13 +269,13 @@ var BootstrapField = React.createClass({displayName: "BootstrapField",
     var showHelpText = field.helpText && (field.isEmpty() || status == 'default')
 
     return React.createElement("div", {className: containerClasses}, 
-      !isBooleanField && field.labelTag({attrs: {className: 'control-label'}}), 
+      !isBooleanField && field.labelTag({attrs: {className: this.props.labelClasses + ' control-label'}}), 
       !isSpecialCaseWidget && (((this.props.prefix || this.props.suffix) && React.createElement("div", {className: "input-group"}, 
         this.props.prefix && React.createElement("span", {className: "input-group-addon"}, this.props.prefix), 
         field.asWidget(widgetAttrs), 
         this.props.suffix && React.createElement("span", {className: "input-group-addon"}, this.props.suffix)
       )) || field.asWidget(widgetAttrs)), 
-      isBooleanField && React.createElement("label", {htmlFor: field.idForLabel()}, 
+      isBooleanField && React.createElement("label", {htmlFor: field.idForLabel(), className: this.props.labelClasses}, 
         field.asWidget(), " ", field.label
       ), 
       isFileField && React.createElement("div", null, 
@@ -490,7 +491,7 @@ var Col = React.createClass({displayName: "Col",
   render:function() {
     return React.createElement("div", {className: this.getColClassName()}, 
       React.Children.map(this.props.children, function(child, index)  {
-        if (child.type === Row) {
+        if (child.type === Row || child.type === Field) {
           return React.cloneElement(child, {
             form: this.props.form
           , spinner: this.props.spinner
@@ -498,6 +499,25 @@ var Col = React.createClass({displayName: "Col",
         } else {
           return child
         }
+      }.bind(this))
+    )
+  }
+})
+
+var FieldSet = React.createClass({displayName: "FieldSet",
+  mixins: [ColMixin],
+
+  propTypes: {
+    name: React.PropTypes.string
+  },
+
+  render:function() {
+    return React.createElement("fieldset", {name: this.props.name, className: this.getColClassName()}, 
+      React.Children.map(this.props.children, function(child, indoex)  {
+        return React.cloneElement(child, {
+          form: this.props.form
+          , spinner: this.props.spinner
+        })
       }.bind(this))
     )
   }
@@ -512,11 +532,17 @@ var Field = React.createClass({displayName: "Field",
     suffix: React.PropTypes.string
   },
 
+  hasColClasses:function() {
+    return !!this.props.xs || !!this.props.sm || !!this.props.md || !!this.props.lg
+  },
+
   render:function() {
     var field = this.props.form.boundField(this.props.name)
-    return React.createElement("div", {className: this.getColClassName()}, 
-      React.createElement(BootstrapField, {key: field.htmlName, field: field, prefix: this.props.prefix, suffix: this.props.suffix})
-    )
+    var bsfield = React.createElement(BootstrapField, {key: field.htmlName, field: field, prefix: this.props.prefix, suffix: this.props.suffix, labelClasses: this.props.labelClasses})
+    if (this.hasColClasses()) {
+      return React.createElement("div", {className: this.getColClassName()}, bsfield)
+    }
+    return bsfield
   }
 })
 
@@ -527,6 +553,7 @@ extend(BootstrapForm, {
 , Col:Col
 , Container:Container
 , Field:Field
+, FieldSet:FieldSet
 , PropTypes: {
     colSize: colSizeChecker
   }
@@ -536,6 +563,5 @@ extend(BootstrapForm, {
 })
 
 module.exports = BootstrapForm
-
 },{}]},{},[1])(1)
 });
