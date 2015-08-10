@@ -266,7 +266,7 @@ var BootstrapField = React.createClass({
       {!isBooleanField && field.labelTag({attrs: {className: 'control-label'}})}
       {!isSpecialCaseWidget && (((this.props.prefix || this.props.suffix) && <div className="input-group">
         {this.props.prefix && <span className="input-group-addon">{this.props.prefix}</span>}
-        field.asWidget(widgetAttrs)
+        {field.asWidget(widgetAttrs)}
         {this.props.suffix && <span className="input-group-addon">{this.props.suffix}</span>}
       </div>) || field.asWidget(widgetAttrs))}
       {isBooleanField && <label htmlFor={field.idForLabel()}>
