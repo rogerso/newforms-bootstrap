@@ -232,6 +232,8 @@ var BootstrapField = React.createClass({
   propTypes: {
     field: React.PropTypes.instanceOf(BoundField).isRequired
   , spinner: React.PropTypes.string
+  , prefix: React.PropTypes.string
+  , suffix: React.PropTypes.string
   },
 
   getDefaultProps() {
@@ -262,7 +264,11 @@ var BootstrapField = React.createClass({
 
     return <div className={containerClasses}>
       {!isBooleanField && field.labelTag({attrs: {className: 'control-label'}})}
-      {!isSpecialCaseWidget && field.asWidget(widgetAttrs)}
+      {!isSpecialCaseWidget && (((this.props.prefix || this.props.suffix) && <div className="input-group">
+        {this.props.prefix && <span className="input-group-addon">{this.props.prefix}</span>}
+        field.asWidget(widgetAttrs)
+        {this.props.suffix && <span className="input-group-addon">{this.props.suffix}</span>}
+      </div>) || field.asWidget(widgetAttrs))}
       {isBooleanField && <label htmlFor={field.idForLabel()}>
         {field.asWidget()} {field.label}
       </label>}
@@ -496,13 +502,15 @@ var Field = React.createClass({
   mixins: [ColMixin],
 
   propTypes: {
-    name: React.PropTypes.string.isRequired
+    name: React.PropTypes.string.isRequired,
+    prefix: React.PropTypes.string,
+    suffix: React.PropTypes.string
   },
 
   render() {
     var field = this.props.form.boundField(this.props.name)
     return <div className={this.getColClassName()}>
-      <BootstrapField key={field.htmlName} field={field}/>
+      <BootstrapField key={field.htmlName} field={field} prefix={this.props.prefix} suffix={this.props.suffix}/>
     </div>
   }
 })
