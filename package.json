@@ -1,10 +1,10 @@
 {
   "name": "newforms-bootstrap",
   "description": "Bootstrap integration for newforms",
-  "version": "2.0.0",
+  "version": "2.0.0-1",
   "main": "./lib/index.js",
   "standalone": "BootstrapForm",
-  "homepage": "https://github.com/insin/newforms-bootstrap",
+  "homepage": "https://github.com/rogerso/newforms-bootstrap",
   "license": "MIT",
   "author": "Jonny Buchanan <jonathan.buchanan@gmail.com>",
   "dependencies": {
