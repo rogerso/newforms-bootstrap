@@ -131,7 +131,7 @@ var BootstrapRadioRenderer = BootstrapChoiceFieldRenderer.extend({
 
 var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
   render() {
-    return <div className="checkbox">
+    return <div>
       {this.choiceInputs().map(input => <label className="checkbox-inline">
         {input.tag()} {input.choiceLabel}
       </label>)}
@@ -141,7 +141,7 @@ var BootstrapCheckboxInlineRenderer = CheckboxFieldRenderer.extend({
 
 var BootstrapRadioInlineRenderer = RadioFieldRenderer.extend({
   render() {
-    return <div className="radio">
+    return <div>
       {this.choiceInputs().map(input => <label className="radio-inline">
         {input.tag()} {input.choiceLabel}
       </label>)}
